@@ -27,19 +27,14 @@ A Streamlit-based PDF chatbot that uses LangChain and OpenAI to answer questions
    pip install -r requirements.txt
    ```
 
-4. **Set up OpenAI API key securely**
+4. **Set up OpenAI API key**
    
-   **Option A: Using the setup script (Recommended)**
-   ```bash
-   python setup_env.py
-   ```
-   
-   **Option B: Environment variable**
+   **Option A: Environment variable**
    ```bash
    export OPENAI_API_KEY='your-actual-api-key-here'
    ```
    
-   **Option C: Create .env file manually**
+   **Option B: Create .env file**
    ```bash
    echo "OPENAI_API_KEY=your-actual-api-key-here" > .env
    ```
@@ -129,9 +124,7 @@ If you encounter any issues:
 
 ## ⚙️ Configuration
 
-The application is fully configurable through environment variables. See [CONFIG.md](CONFIG.md) for complete documentation.
-
-### Quick Configuration Examples
+The application is configurable through environment variables:
 
 **Basic Setup:**
 ```bash
@@ -151,11 +144,6 @@ CHUNK_SIZE=1500
 OPENAI_API_KEY=your_key_here
 APP_TITLE=My Custom PDF Assistant
 SIDEBAR_TITLE=Document Library
-```
-
-### Interactive Setup
-```bash
-python setup_env.py
 ```
 
 ## 🔒 Security Best Practices

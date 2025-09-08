@@ -35,25 +35,7 @@ QUESTION_INPUT_TEXT = os.getenv("QUESTION_INPUT_TEXT", "Type your question here"
 # Check if API key is provided
 if not OPENAI_API_KEY:
     st.error("⚠️ OpenAI API key not found!")
-    st.markdown("""
-    **Please set your OpenAI API key using one of these methods:**
-    
-    **Method 1: Environment Variable**
-    ```bash
-    export OPENAI_API_KEY='your-key-here'
-    ```
-    
-    **Method 2: .env File**
-    ```bash
-    python setup_env.py
-    ```
-    
-    **Method 3: Manual .env File**
-    Create a `.env` file with:
-    ```
-    OPENAI_API_KEY=your-key-here
-    ```
-    """)
+    st.info("💡 Set your API key: `export OPENAI_API_KEY='your-key-here'` or create a `.env` file")
     st.stop()
 
 # Upload PDF files
