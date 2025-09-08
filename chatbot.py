@@ -16,7 +16,20 @@ except ImportError:
     pass
 
 # Configuration - All values can be set via environment variables
+# Try to get API key from environment variables first, then from Streamlit secrets
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# If not found in environment, try Streamlit secrets (for Streamlit Cloud)
+if not OPENAI_API_KEY:
+    try:
+        OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+    except:
+        pass
+
+# Clean up the API key (remove quotes if present)
+if OPENAI_API_KEY:
+    OPENAI_API_KEY = OPENAI_API_KEY.strip().strip('"').strip("'")
+
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0"))
 OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
@@ -35,7 +48,20 @@ QUESTION_INPUT_TEXT = os.getenv("QUESTION_INPUT_TEXT", "Type your question here"
 # Check if API key is provided
 if not OPENAI_API_KEY:
     st.error("⚠️ OpenAI API key not found!")
-    st.info("💡 Set your API key: `export OPENAI_API_KEY='your-key-here'` or create a `.env` file")
+    st.markdown("""
+    **Please set your OpenAI API key:**
+    
+    **For Streamlit Cloud:**
+    1. Go to your app's Settings → Secrets
+    2. Add: `OPENAI_API_KEY = "your-key-here"`
+    3. Save and restart the app
+    
+    **For Local Development:**
+    ```bash
+    export OPENAI_API_KEY='your-key-here'
+    # or create .env file
+    ```
+    """)
     st.stop()
 
 # Upload PDF files
