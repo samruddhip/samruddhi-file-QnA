@@ -236,8 +236,23 @@ export APP_PASSWORD_HASH='your_hashed_password'
 **For Streamlit Cloud:**
 Add to secrets:
 ```
+# Required
+OPENAI_API_KEY = "your_openai_api_key_here"
+
+# Authentication (Optional)
 APP_USERNAME = "your_username"
 APP_PASSWORD_HASH = "your_hashed_password"
+
+# Optional Configuration
+OPENAI_MODEL = "gpt-3.5-turbo"
+OPENAI_TEMPERATURE = "0"
+OPENAI_MAX_TOKENS = "1000"
+CHUNK_SIZE = "1000"
+CHUNK_OVERLAP = "150"
+APP_TITLE = "PDF Chatbot - Ask Questions About Your Documents"
+SIDEBAR_TITLE = "Your Documents"
+FILE_UPLOADER_TEXT = "Upload a PDF file and start asking questions"
+QUESTION_INPUT_TEXT = "Type your question here"
 ```
 
 ### 🛡️ Security Best Practices

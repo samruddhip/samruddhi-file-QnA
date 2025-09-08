@@ -17,35 +17,46 @@ except ImportError:
     # dotenv not installed, continue without it
     pass
 
-# Configuration - All values can be set via environment variables
-# Try to get API key from environment variables first, then from Streamlit secrets
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Helper functions
+def hash_password(password):
+    """Hash a password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
 
-# If not found in environment, try Streamlit secrets (for Streamlit Cloud)
-if not OPENAI_API_KEY:
+def get_config_value(key, default_value, value_type=str):
+    """Get configuration value from Streamlit secrets or environment variables"""
     try:
-        OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+        # Try Streamlit secrets first
+        value = st.secrets[key]
+        if value_type == str:
+            return value.strip().strip('"').strip("'")
+        return value_type(value)
     except:
-        pass
+        # Fallback to environment variables
+        env_value = os.getenv(key, default_value)
+        if value_type == str:
+            return env_value
+        return value_type(env_value)
 
-# Clean up the API key (remove quotes if present)
-if OPENAI_API_KEY:
-    OPENAI_API_KEY = OPENAI_API_KEY.strip().strip('"').strip("'")
-
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
-OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0"))
-OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
+# OpenAI Configuration
+OPENAI_API_KEY = get_config_value("OPENAI_API_KEY", None, str)
+OPENAI_MODEL = get_config_value("OPENAI_MODEL", "gpt-3.5-turbo", str)
+OPENAI_TEMPERATURE = get_config_value("OPENAI_TEMPERATURE", "0", float)
+OPENAI_MAX_TOKENS = get_config_value("OPENAI_MAX_TOKENS", "1000", int)
 
 # Text processing configuration
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1000"))
-CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
-CHUNK_SEPARATORS = os.getenv("CHUNK_SEPARATORS", "\\n").split(",")
+CHUNK_SIZE = get_config_value("CHUNK_SIZE", "1000", int)
+CHUNK_OVERLAP = get_config_value("CHUNK_OVERLAP", "150", int)
+CHUNK_SEPARATORS = get_config_value("CHUNK_SEPARATORS", "\\n", str).split(",")
 
 # UI Configuration
-APP_TITLE = os.getenv("APP_TITLE", "PDF Chatbot - Ask Questions About Your Documents")
-SIDEBAR_TITLE = os.getenv("SIDEBAR_TITLE", "Your Documents")
-FILE_UPLOADER_TEXT = os.getenv("FILE_UPLOADER_TEXT", "Upload a PDF file and start asking questions")
-QUESTION_INPUT_TEXT = os.getenv("QUESTION_INPUT_TEXT", "Type your question here")
+APP_TITLE = get_config_value("APP_TITLE", "PDF Chatbot - Ask Questions About Your Documents", str)
+SIDEBAR_TITLE = get_config_value("SIDEBAR_TITLE", "Your Documents", str)
+FILE_UPLOADER_TEXT = get_config_value("FILE_UPLOADER_TEXT", "Upload a PDF file and start asking questions", str)
+QUESTION_INPUT_TEXT = get_config_value("QUESTION_INPUT_TEXT", "Type your question here", str)
+
+# Authentication Configuration
+APP_USERNAME = get_config_value("APP_USERNAME", "admin", str)
+APP_PASSWORD_HASH = get_config_value("APP_PASSWORD_HASH", hash_password("admin123"), str)
 
 # Check if API key is provided
 if not OPENAI_API_KEY:
@@ -67,15 +78,11 @@ if not OPENAI_API_KEY:
     st.stop()
 
 # Authentication System
-def hash_password(password):
-    """Hash a password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
 def check_credentials(username, password):
     """Check if username and password are correct"""
-    # Get credentials from environment variables or use defaults
-    valid_username = os.getenv("APP_USERNAME", "admin")
-    valid_password_hash = os.getenv("APP_PASSWORD_HASH", hash_password("admin123"))
+    # Get credentials from configuration (secrets or environment)
+    valid_username = APP_USERNAME
+    valid_password_hash = APP_PASSWORD_HASH
     
     # Hash the provided password
     provided_password_hash = hash_password(password)
