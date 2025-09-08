@@ -115,7 +115,6 @@ pip install -r requirements.txt
 - Conversation history
 - File type validation
 - Better UI/UX
-- Authentication
 
 ### Deployment Options
 - Streamlit Cloud

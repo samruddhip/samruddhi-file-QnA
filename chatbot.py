@@ -1,7 +1,5 @@
 import streamlit as st
 import os
-import hashlib
-import time
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -18,10 +16,6 @@ except ImportError:
     pass
 
 # Helper functions
-def hash_password(password):
-    """Hash a password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
 def get_config_value(key, default_value, value_type=str):
     """Get configuration value from Streamlit secrets or environment variables"""
     try:
@@ -54,10 +48,6 @@ APP_TITLE = get_config_value("APP_TITLE", "PDF Chatbot - Ask Questions About You
 SIDEBAR_TITLE = get_config_value("SIDEBAR_TITLE", "Your Documents", str)
 FILE_UPLOADER_TEXT = get_config_value("FILE_UPLOADER_TEXT", "Upload a PDF file and start asking questions", str)
 QUESTION_INPUT_TEXT = get_config_value("QUESTION_INPUT_TEXT", "Type your question here", str)
-
-# Authentication Configuration
-APP_USERNAME = get_config_value("APP_USERNAME", "admin", str)
-APP_PASSWORD_HASH = get_config_value("APP_PASSWORD_HASH", hash_password("admin123"), str)
 
 # Check if API key is provided
 if not OPENAI_API_KEY:

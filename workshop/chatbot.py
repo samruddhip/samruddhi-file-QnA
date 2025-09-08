@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import hashlib
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -20,10 +19,6 @@ except ImportError:
     pass
 
 # Helper functions
-def hash_password(password):
-    """Hash a password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
 def get_config_value(key, default_value, value_type=str):
     """Get configuration value from Streamlit secrets or environment variables"""
     try:
@@ -56,10 +51,6 @@ SIDEBAR_TITLE = get_config_value("SIDEBAR_TITLE", "Your Documents", str)
 FILE_UPLOADER_TEXT = get_config_value("FILE_UPLOADER_TEXT", "Upload a PDF file and start asking questions", str)
 QUESTION_INPUT_TEXT = get_config_value("QUESTION_INPUT_TEXT", "Type your question here", str)
 
-# Authentication Configuration
-APP_USERNAME = get_config_value("APP_USERNAME", "admin", str)
-APP_PASSWORD_HASH = get_config_value("APP_PASSWORD_HASH", hash_password("admin123"), str)
-
 # Check if API key is provided
 if not OPENAI_API_KEY:
     st.error("⚠️ OpenAI API key not found!")
@@ -78,71 +69,6 @@ if not OPENAI_API_KEY:
     ```
     """)
     st.stop()
-
-# Authentication System
-def check_credentials(username, password):
-    """Check if username and password are correct"""
-    # Get credentials from configuration (secrets or environment)
-    valid_username = APP_USERNAME
-    valid_password_hash = APP_PASSWORD_HASH
-    
-    # Hash the provided password
-    provided_password_hash = hash_password(password)
-    
-    return username == valid_username and provided_password_hash == valid_password_hash
-
-def login_page():
-    """Display login page"""
-    st.title("🔐 PDF Chatbot - Login Required")
-    
-    with st.form("login_form"):
-        st.markdown("### Please login to access the PDF Chatbot")
-        
-        username = st.text_input("Username", placeholder="Enter your username")
-        password = st.text_input("Password", type="password", placeholder="Enter your password")
-        
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            login_button = st.form_submit_button("Login", use_container_width=True)
-        with col2:
-            if st.form_submit_button("Forgot Password?", use_container_width=True):
-                st.info("Contact your administrator for password reset.")
-        
-        if login_button:
-            if check_credentials(username, password):
-                st.session_state.authenticated = True
-                st.session_state.username = username
-                st.success("✅ Login successful!")
-                st.rerun()
-            else:
-                st.error("❌ Invalid username or password!")
-    
-    # Show default credentials for first-time setup
-    with st.expander("ℹ️ Default Credentials (Change in Environment Variables)"):
-        st.code("""
-Username: admin
-Password: admin123
-
-To change these, set environment variables:
-APP_USERNAME = your_username
-APP_PASSWORD_HASH = your_hashed_password
-        """)
-
-def logout():
-    """Logout user"""
-    st.session_state.authenticated = False
-    st.session_state.username = None
-    st.rerun()
-
-# Check authentication
-if not st.session_state.get("authenticated", False):
-    login_page()
-    st.stop()
-
-# Main application (only shown if authenticated)
-st.sidebar.markdown("---")
-if st.sidebar.button("🚪 Logout"):
-    logout()
 
 # Upload PDF files
 st.header(APP_TITLE)
