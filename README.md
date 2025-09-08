@@ -27,16 +27,19 @@ A Streamlit-based PDF chatbot that uses LangChain and OpenAI to answer questions
    pip install -r requirements.txt
    ```
 
-4. **Set up OpenAI API key**
+4. **Set up OpenAI API key securely**
    
-   **Option A: Environment variable**
+   **Option A: Environment variable (Recommended for production)**
    ```bash
    export OPENAI_API_KEY='your-actual-api-key-here'
    ```
    
-   **Option B: Create .env file**
+   **Option B: .env file (Recommended for development)**
    ```bash
-   echo "OPENAI_API_KEY=your-actual-api-key-here" > .env
+   # Copy the example file
+   cp .env.example .env
+   # Edit .env and add your actual API key
+   nano .env
    ```
    
    Get your API key from [OpenAI Platform](https://platform.openai.com/)
@@ -146,32 +149,41 @@ APP_TITLE=My Custom PDF Assistant
 SIDEBAR_TITLE=Document Library
 ```
 
-## 🔒 Security Best Practices
+## 🔒 Security Features
 
-### API Key Security
-- ✅ **Never commit API keys to version control**
-- ✅ **Use environment variables or .env files**
-- ✅ **The .env file is automatically ignored by git**
-- ✅ **Use different keys for development and production**
+### ✅ API Key Protection
+- **Never hardcoded** - API keys are read from environment variables
+- **Git ignored** - `.env` files are automatically excluded from version control
+- **Secure by default** - Application stops if no API key is provided
 
-### Environment Variables
+### 🔐 How to Set API Key Securely
+
+**Development (using .env file):**
 ```bash
-# Development
-export OPENAI_API_KEY='sk-dev-key-here'
+# 1. Copy example file
+cp .env.example .env
 
-# Production (use your hosting platform's environment variable settings)
-OPENAI_API_KEY='sk-prod-key-here'
+# 2. Edit with your actual key
+nano .env
+
+# 3. Run the app
+streamlit run chatbot.py
 ```
 
-### .env File Structure
+**Production (using environment variables):**
 ```bash
-# .env file (not committed to git)
-OPENAI_API_KEY=your_actual_key_here
-OPENAI_MODEL=gpt-3.5-turbo
-OPENAI_TEMPERATURE=0
-CHUNK_SIZE=1000
-CHUNK_OVERLAP=150
+# Set environment variable
+export OPENAI_API_KEY='sk-your-actual-key-here'
+
+# Run the app
+streamlit run chatbot.py
 ```
+
+### 🛡️ Security Best Practices
+- ✅ Use different API keys for development and production
+- ✅ Never share your `.env` file
+- ✅ Rotate API keys regularly
+- ✅ Monitor API usage in OpenAI dashboard
 
 ## 🔗 Links
 

@@ -1,159 +1,192 @@
-# PDF Chatbot Workshop - Complete Setup Guide
+# PDF Chatbot Project
 
-## Workshop Overview
-Build a PDF chatbot using Streamlit, LangChain, and OpenAI that can answer questions about uploaded PDF documents.
+A Streamlit-based PDF chatbot that uses LangChain and OpenAI to answer questions about uploaded PDF documents.
 
-## Prerequisites
+## 🚀 Quick Start
+
+### Prerequisites
 - Python 3.8 or higher
 - OpenAI API key
-- Basic knowledge of Python
 
-## Step-by-Step Installation Guide
+### Installation
 
-### Step 1: Create Project Directory
-```bash
-mkdir pdf-chatbot-workshop
-cd pdf-chatbot-workshop
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   cd PyCharmMiscProject
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up OpenAI API key securely**
+   
+   **Option A: Environment variable (Recommended for production)**
+   ```bash
+   export OPENAI_API_KEY='your-actual-api-key-here'
+   ```
+   
+   **Option B: .env file (Recommended for development)**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   # Edit .env and add your actual API key
+   nano .env
+   ```
+   
+   Get your API key from [OpenAI Platform](https://platform.openai.com/)
+
+5. **Run the application**
+   ```bash
+   streamlit run chatbot.py
+   ```
+
+6. **Open in browser**
+   - The app will open at `http://localhost:8501`
+
+## 📁 Project Structure
+
+```
+PyCharmMiscProject/
+├── chatbot.py              # Main Streamlit application
+├── requirements.txt         # Python dependencies
+├── README.md               # This file
+├── .gitignore              # Git ignore rules
+└── workshop/               # Workshop materials
+    ├── chatbot.py          # Workshop version
+    ├── requirements.txt    # Workshop dependencies
+    └── README.md           # Workshop guide
 ```
 
-### Step 2: Create Virtual Environment
-```bash
-# Create virtual environment
-python3 -m venv .venv
+## 🛠️ Features
 
-# Activate virtual environment
-# On macOS/Linux:
-source .venv/bin/activate
-# On Windows:
-# .venv\Scripts\activate
+- **PDF Upload**: Upload PDF files through a user-friendly interface
+- **Text Extraction**: Automatically extract text from PDF documents
+- **Smart Chunking**: Break documents into optimal chunks for processing
+- **Vector Search**: Use FAISS for efficient similarity search
+- **AI-Powered Q&A**: Get intelligent answers using OpenAI's GPT models
+- **Error Handling**: Comprehensive error handling and user feedback
+
+## 🔧 Dependencies
+
+- `streamlit` - Web application framework
+- `PyPDF2` - PDF text extraction
+- `langchain` - LLM application framework
+- `langchain-openai` - OpenAI integration
+- `langchain-community` - Community integrations
+- `faiss-cpu` - Vector similarity search
+- `openai` - OpenAI API client
+
+## 📚 Workshop Materials
+
+The `workshop/` folder contains complete materials for conducting a workshop:
+- Step-by-step setup guide
+- Code explanations
+- Troubleshooting guide
+- Sample documents recommendations
+
+## 🚀 Deployment
+
+### Streamlit Cloud
+1. Push your code to GitHub
+2. Go to [Streamlit Cloud](https://streamlit.io/cloud)
+3. Connect your GitHub repository
+4. Deploy with one click
+
+### Local Deployment
+```bash
+streamlit run chatbot.py --server.port 8501
 ```
 
-### Step 3: Install Dependencies
-Create a `requirements.txt` file:
-```txt
-streamlit
-PyPDF2
-langchain
-langchain-openai
-langchain-community
-faiss-cpu
-openai
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🆘 Support
+
+If you encounter any issues:
+1. Check the troubleshooting section in `workshop/README.md`
+2. Open an issue on GitHub
+3. Check the [Streamlit documentation](https://docs.streamlit.io/)
+
+## ⚙️ Configuration
+
+The application is configurable through environment variables:
+
+**Basic Setup:**
+```bash
+OPENAI_API_KEY=your_key_here
 ```
 
-Install dependencies:
+**Custom Model:**
 ```bash
-pip install -r requirements.txt
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4
+OPENAI_TEMPERATURE=0.1
+CHUNK_SIZE=1500
 ```
 
-### Step 4: Get OpenAI API Key
-1. Go to [OpenAI Platform](https://platform.openai.com/)
-2. Sign up or log in
-3. Navigate to API Keys section
-4. Create a new API key
-5. Copy the key and replace `"your-openai-api-key-here"` in the code
-
-### Step 5: Run the Application
+**Custom UI:**
 ```bash
+OPENAI_API_KEY=your_key_here
+APP_TITLE=My Custom PDF Assistant
+SIDEBAR_TITLE=Document Library
+```
+
+## 🔒 Security Features
+
+### ✅ API Key Protection
+- **Never hardcoded** - API keys are read from environment variables
+- **Git ignored** - `.env` files are automatically excluded from version control
+- **Secure by default** - Application stops if no API key is provided
+
+### 🔐 How to Set API Key Securely
+
+**Development (using .env file):**
+```bash
+# 1. Copy example file
+cp .env.example .env
+
+# 2. Edit with your actual key
+nano .env
+
+# 3. Run the app
 streamlit run chatbot.py
 ```
 
-The app will open in your browser at `http://localhost:8501`
-
-## Workshop Activities
-
-### Activity 1: Basic Setup (15 minutes)
-- Set up the project structure
-- Install dependencies
-- Run the basic app
-
-### Activity 2: Understanding the Code (20 minutes)
-- Explain each component:
-  - PDF text extraction
-  - Text chunking
-  - Embeddings
-  - Vector store
-  - Question answering chain
-
-### Activity 3: Testing the App (15 minutes)
-- Upload a sample PDF
-- Ask questions about the content
-- Test different types of questions
-
-### Activity 4: Customization (20 minutes)
-- Modify chunk size and overlap
-- Change the LLM model
-- Add error handling improvements
-- Customize the UI
-
-### Activity 5: Advanced Features (20 minutes)
-- Add support for multiple PDFs
-- Implement conversation history
-- Add file type validation
-- Create a better UI layout
-
-## Troubleshooting Common Issues
-
-### Issue 1: ModuleNotFoundError
+**Production (using environment variables):**
 ```bash
-# Solution: Install missing packages
-pip install langchain-openai
+# Set environment variable
+export OPENAI_API_KEY='sk-your-actual-key-here'
+
+# Run the app
+streamlit run chatbot.py
 ```
 
-### Issue 2: API Key Error
-- Ensure your OpenAI API key is correct
-- Check if you have sufficient credits
+### 🛡️ Security Best Practices
+- ✅ Use different API keys for development and production
+- ✅ Never share your `.env` file
+- ✅ Rotate API keys regularly
+- ✅ Monitor API usage in OpenAI dashboard
 
-### Issue 3: PDF Reading Error
-- Try with a different PDF file
-- Ensure the PDF contains extractable text
+## 🔗 Links
 
-### Issue 4: Memory Issues
-- Reduce chunk size
-- Use smaller PDF files for testing
-
-## Workshop Materials Needed
-
-### For Instructor:
-- Laptop with Python installed
-- OpenAI API key
-- Sample PDF files for testing
-- Projector/screen for demonstration
-
-### For Participants:
-- Laptops with Python installed
-- OpenAI API key (can use instructor's for demo)
-- Sample PDF files
-
-## Sample PDFs for Testing
-- Research papers
-- Technical documentation
-- News articles
-- User manuals
-
-## Next Steps After Workshop
-1. Deploy to Streamlit Cloud
-2. Add authentication
-3. Support for more file types
-4. Database integration
-5. User management
-
-## Resources
 - [Streamlit Documentation](https://docs.streamlit.io/)
 - [LangChain Documentation](https://python.langchain.com/)
 - [OpenAI API Documentation](https://platform.openai.com/docs)
-- [FAISS Documentation](https://faiss.ai/)
-
-## Workshop Duration
-- Total: 90 minutes
-- Setup: 15 minutes
-- Coding: 45 minutes
-- Testing: 15 minutes
-- Q&A: 15 minutes
-
-## Prerequisites Check
-Before starting, ensure participants have:
-- [ ] Python 3.8+ installed
-- [ ] Basic Python knowledge
-- [ ] Text editor/IDE ready
-- [ ] Internet connection
-- [ ] OpenAI account (or access to API key)
