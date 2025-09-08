@@ -9,6 +9,33 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
+# Initialize session state first
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+# Check authentication immediately - before any other code
+if not st.session_state.authenticated:
+    # Simple login page
+    st.title("🔐 PDF Chatbot - Login Required")
+    
+    with st.form("login_form"):
+        st.markdown("### Please login to access the PDF Chatbot")
+        
+        username = st.text_input("Username", value="admin")
+        password = st.text_input("Password", type="password", value="admin123")
+        
+        login_button = st.form_submit_button("🚀 Login", use_container_width=True)
+        
+        if login_button:
+            if username == "admin" and password == "admin123":
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                st.success("✅ Login successful!")
+                st.rerun()
+            else:
+                st.error("❌ Invalid username or password!")
+    
+    st.stop()
 
 # Try to load from .env file first
 try:
@@ -128,10 +155,6 @@ def logout():
     st.session_state.username = None
     st.rerun()
 
-# Check authentication
-if not st.session_state.get("authenticated", False):
-    login_page()
-    st.stop()
 
 # Main application (only shown if authenticated)
 # Add user info and logout in sidebar
