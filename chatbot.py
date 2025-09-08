@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import hashlib
-import time
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -9,40 +8,11 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
-# Initialize session state first
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-# Check authentication immediately - before any other code
-if not st.session_state.authenticated:
-    # Simple login page
-    st.title("🔐 PDF Chatbot - Login Required")
-    
-    with st.form("login_form"):
-        st.markdown("### Please login to access the PDF Chatbot")
-        
-        username = st.text_input("Username", value="admin")
-        password = st.text_input("Password", type="password", value="admin123")
-        
-        login_button = st.form_submit_button("🚀 Login", use_container_width=True)
-        
-        if login_button:
-            if username == "admin" and password == "admin123":
-                st.session_state.authenticated = True
-                st.session_state.username = username
-                st.success("✅ Login successful!")
-                st.rerun()
-            else:
-                st.error("❌ Invalid username or password!")
-    
-    st.stop()
-
 # Try to load from .env file first
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
-    # dotenv not installed, continue without it
     pass
 
 # Helper functions
@@ -53,17 +23,72 @@ def hash_password(password):
 def get_config_value(key, default_value, value_type=str):
     """Get configuration value from Streamlit secrets or environment variables"""
     try:
-        # Try Streamlit secrets first
         value = st.secrets[key]
         if value_type == str:
             return value.strip().strip('"').strip("'")
         return value_type(value)
     except:
-        # Fallback to environment variables
         env_value = os.getenv(key, default_value)
         if value_type == str:
             return env_value
         return value_type(env_value)
+
+# Initialize session state
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+
+# Authentication functions
+def check_credentials(username, password):
+    """Check if username and password are correct using Streamlit secrets"""
+    try:
+        # Get credentials from Streamlit secrets
+        config_username = st.secrets["APP_USERNAME"]
+        config_password_hash = st.secrets["APP_PASSWORD_HASH"]
+        
+        # Compare username and hashed password
+        return username == config_username and hash_password(password) == config_password_hash
+    except:
+        # If secrets are not available, show error
+        st.error("⚠️ Authentication configuration not found. Please check your Streamlit secrets.")
+        return False
+
+def login_page():
+    """Display login page"""
+    # Center the login form
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.title("🔐 PDF Chatbot")
+        st.markdown("### Please login to access the PDF Chatbot")
+        
+        with st.form("login_form"):
+            username = st.text_input("Username", placeholder="Enter your username")
+            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            
+            login_button = st.form_submit_button("🚀 Login", use_container_width=True)
+            
+            if login_button:
+                if check_credentials(username, password):
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.success("✅ Login successful!")
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid username or password!")
+
+def logout():
+    """Logout user"""
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.rerun()
+
+# Check authentication - show login page if not authenticated
+if not st.session_state.authenticated:
+    login_page()
+    st.stop()
+
 
 # OpenAI Configuration
 OPENAI_API_KEY = get_config_value("OPENAI_API_KEY", None, str)
@@ -105,55 +130,6 @@ if not OPENAI_API_KEY:
     """)
     st.stop()
 
-# Authentication System
-def check_credentials(username, password):
-    """Check if username and password are correct"""
-    # Get credentials from configuration (secrets or environment)
-    valid_username = APP_USERNAME
-    valid_password_hash = APP_PASSWORD_HASH
-    
-    # Hash the provided password
-    provided_password_hash = hash_password(password)
-    
-    return username == valid_username and provided_password_hash == valid_password_hash
-
-def login_page():
-    """Display login page"""
-    # Center the login form
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        st.title("🔐 PDF Chatbot")
-        st.markdown("### Please login to access the PDF Chatbot")
-        
-        with st.form("login_form"):
-            username = st.text_input("Username", placeholder="Enter your username", value="admin")
-            password = st.text_input("Password", type="password", placeholder="Enter your password", value="admin123")
-            
-            login_button = st.form_submit_button("🚀 Login", use_container_width=True)
-            
-            if login_button:
-                if check_credentials(username, password):
-                    st.session_state.authenticated = True
-                    st.session_state.username = username
-                    st.success("✅ Login successful!")
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid username or password!")
-        
-        # Show default credentials
-        with st.expander("ℹ️ Default Credentials"):
-            st.code("""
-Username: admin
-Password: admin123
-            """)
-            st.markdown("**To change these credentials, update your environment variables or Streamlit secrets.**")
-
-def logout():
-    """Logout user"""
-    st.session_state.authenticated = False
-    st.session_state.username = None
-    st.rerun()
 
 
 # Main application (only shown if authenticated)
