@@ -95,42 +95,57 @@ The `workshop/` folder contains complete materials for conducting a workshop:
 
 ## 🚀 Deployment
 
-### Quick Deploy Options
+### Streamlit Cloud (Recommended - Free & Easy)
 
-**1. Streamlit Cloud (Recommended - Free)**
-1. Push code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect repository and set environment variables
-4. Deploy!
+**Step-by-Step Deployment:**
 
-**2. Docker (Production Ready)**
+1. **Push your code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Go to Streamlit Cloud**
+   - Visit [share.streamlit.io](https://share.streamlit.io)
+   - Sign in with your GitHub account
+
+3. **Deploy your app**
+   - Click "New app"
+   - Select your repository: `samruddhip/samruddhi-file-QnA`
+   - Set main file path: `chatbot.py`
+   - Click "Deploy!"
+
+4. **Set your API key**
+   - Go to your app's settings
+   - Add secret: `OPENAI_API_KEY`
+   - Value: `your_actual_api_key_here`
+   - Save and restart
+
+5. **Your app is live!** 🎉
+   - Share the URL with anyone
+   - No technical setup required
+
+### Local Development
 ```bash
-# Build and run
-docker build -t pdf-chatbot .
-docker run -p 8501:8501 -e OPENAI_API_KEY=your_key_here pdf-chatbot
+# Set your API key
+export OPENAI_API_KEY='your_key_here'
 
-# Or use docker-compose
-docker-compose up --build
+# Run locally
+streamlit run chatbot.py
 ```
 
-**3. Local Development**
-```bash
-streamlit run chatbot.py --server.port 8501
-```
-
-### Environment Variables for Deployment
+### Environment Variables
 ```bash
 # Required
 OPENAI_API_KEY=your_actual_api_key_here
 
-# Optional
+# Optional (customize your app)
 OPENAI_MODEL=gpt-3.5-turbo
 OPENAI_TEMPERATURE=0
 CHUNK_SIZE=1000
 APP_TITLE=PDF Chatbot
 ```
-
-📖 **See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment guide**
 
 ## 🤝 Contributing
 

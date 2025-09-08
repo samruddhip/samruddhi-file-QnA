@@ -1,268 +1,129 @@
-# Deployment Guide
+# Streamlit Cloud Deployment Guide
 
-This guide covers different deployment options for your PDF Chatbot application.
+This guide shows you how to deploy your PDF Chatbot to Streamlit Cloud - the easiest and free way to get your app online.
 
-## 🚀 Deployment Options
+## 🚀 Streamlit Cloud Deployment (Recommended)
 
-### 1. Streamlit Cloud (Recommended - Free)
+### Why Streamlit Cloud?
+- ✅ **100% Free** - No cost for hosting
+- ✅ **No technical setup** - Just point and click
+- ✅ **Automatic updates** - Updates when you push to GitHub
+- ✅ **Custom domain** - Get your own URL
+- ✅ **Secure** - Environment variables are encrypted
 
-**Steps:**
-1. Push your code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub repository
-4. Set environment variables in Streamlit Cloud dashboard
-5. Deploy!
+### Step-by-Step Deployment
 
-**Environment Variables to Set:**
+#### Step 1: Prepare Your Code
+Make sure your code is pushed to GitHub:
+```bash
+git add .
+git commit -m "Ready for Streamlit Cloud deployment"
+git push origin main
+```
+
+#### Step 2: Go to Streamlit Cloud
+1. Visit [share.streamlit.io](https://share.streamlit.io)
+2. Sign in with your GitHub account
+3. Click "New app"
+
+#### Step 3: Configure Your App
+1. **Repository**: Select `samruddhip/samruddhi-file-QnA`
+2. **Branch**: Select `main`
+3. **Main file path**: Enter `chatbot.py`
+4. **App URL**: Choose a custom URL (optional)
+5. Click "Deploy!"
+
+#### Step 4: Set Environment Variables
+1. Go to your app's dashboard
+2. Click "Settings" → "Secrets"
+3. Add your API key:
+   ```
+   OPENAI_API_KEY = your_actual_api_key_here
+   ```
+4. Click "Save"
+
+#### Step 5: Restart Your App
+1. Go to "Manage app"
+2. Click "Restart app"
+3. Wait for it to restart
+4. Your app is now live! 🎉
+
+### Environment Variables You Can Set
+
+**Required:**
 ```
 OPENAI_API_KEY=your_actual_api_key_here
+```
+
+**Optional (to customize your app):**
+```
 OPENAI_MODEL=gpt-3.5-turbo
 OPENAI_TEMPERATURE=0
+OPENAI_MAX_TOKENS=1000
 CHUNK_SIZE=1000
-APP_TITLE=PDF Chatbot
+CHUNK_OVERLAP=150
+APP_TITLE=PDF Chatbot - Ask Questions About Your Documents
+SIDEBAR_TITLE=Your Documents
+FILE_UPLOADER_TEXT=Upload a PDF file and start asking questions
+QUESTION_INPUT_TEXT=Type your question here
 ```
 
-### 2. Docker Deployment
+## 🔧 Local Development
 
-**Local Development:**
+### Run Locally
 ```bash
-# Build and run with docker-compose
-docker-compose up --build
+# Set your API key
+export OPENAI_API_KEY='your_key_here'
 
-# Or run directly with Docker
-docker build -t pdf-chatbot .
-docker run -p 8501:8501 -e OPENAI_API_KEY=your_key_here pdf-chatbot
+# Run the app
+streamlit run chatbot.py
 ```
 
-**Production with Docker:**
+### Customize Your App
+You can customize your app by setting environment variables:
+
 ```bash
-# Build image
-docker build -t your-username/pdf-chatbot .
+# Basic customization
+export OPENAI_API_KEY='your_key_here'
+export OPENAI_MODEL='gpt-4'
+export APP_TITLE='My Custom PDF Assistant'
 
-# Push to registry
-docker push your-username/pdf-chatbot
-
-# Run on server
-docker run -d \
-  --name pdf-chatbot \
-  -p 8501:8501 \
-  -e OPENAI_API_KEY=your_key_here \
-  -e OPENAI_MODEL=gpt-4 \
-  your-username/pdf-chatbot
+# Run with custom settings
+streamlit run chatbot.py
 ```
-
-### 3. Vercel Deployment
-
-**Steps:**
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run: `vercel`
-3. Set environment variables in Vercel dashboard
-4. Deploy!
-
-### 4. Railway Deployment
-
-**Steps:**
-1. Connect GitHub repository to Railway
-2. Set environment variables
-3. Deploy automatically!
-
-### 5. Heroku Deployment
-
-**Steps:**
-1. Create `Procfile`:
-```
-web: streamlit run chatbot.py --server.port=$PORT --server.address=0.0.0.0
-```
-
-2. Deploy:
-```bash
-heroku create your-app-name
-heroku config:set OPENAI_API_KEY=your_key_here
-git push heroku main
-```
-
-## 🔐 Environment Variables Setup
-
-### Required Variables
-- `OPENAI_API_KEY` - Your OpenAI API key
-
-### Optional Variables
-- `OPENAI_MODEL` - Model to use (default: gpt-3.5-turbo)
-- `OPENAI_TEMPERATURE` - Response creativity (default: 0)
-- `OPENAI_MAX_TOKENS` - Max response tokens (default: 1000)
-- `CHUNK_SIZE` - Text chunk size (default: 1000)
-- `CHUNK_OVERLAP` - Chunk overlap (default: 150)
-- `APP_TITLE` - Application title
-- `SIDEBAR_TITLE` - Sidebar title
-- `FILE_UPLOADER_TEXT` - File uploader text
-- `QUESTION_INPUT_TEXT` - Question input text
-
-## 🔧 CI/CD Setup
-
-### GitHub Secrets Required
-
-Go to your repository → Settings → Secrets and variables → Actions
-
-**Required Secrets:**
-```
-OPENAI_API_KEY=your_actual_api_key_here
-```
-
-**Optional Secrets (for different deployments):**
-```
-# Streamlit Cloud
-STREAMLIT_CLOUD_TOKEN=your_streamlit_token
-STREAMLIT_APP_URL=your_app_url
-
-# Docker Hub
-DOCKER_USERNAME=your_docker_username
-DOCKER_PASSWORD=your_docker_password
-
-# Vercel
-VERCEL_TOKEN=your_vercel_token
-VERCEL_ORG_ID=your_org_id
-VERCEL_PROJECT_ID=your_project_id
-```
-
-### Workflow Features
-- ✅ **Automated testing** on every push
-- ✅ **Linting** with flake8
-- ✅ **Multi-platform deployment** (Streamlit, Docker, Vercel)
-- ✅ **Security scanning** for vulnerabilities
-- ✅ **Automatic deployment** on main branch
-
-## 🐳 Docker Commands
-
-### Build and Run Locally
-```bash
-# Build image
-docker build -t pdf-chatbot .
-
-# Run container
-docker run -p 8501:8501 \
-  -e OPENAI_API_KEY=your_key_here \
-  pdf-chatbot
-
-# Run with docker-compose
-docker-compose up --build
-```
-
-### Production Deployment
-```bash
-# Build for production
-docker build -t pdf-chatbot:latest .
-
-# Tag for registry
-docker tag pdf-chatbot:latest your-registry/pdf-chatbot:latest
-
-# Push to registry
-docker push your-registry/pdf-chatbot:latest
-
-# Deploy to server
-docker run -d \
-  --name pdf-chatbot \
-  --restart unless-stopped \
-  -p 8501:8501 \
-  -e OPENAI_API_KEY=your_production_key \
-  -e OPENAI_MODEL=gpt-4 \
-  your-registry/pdf-chatbot:latest
-```
-
-## 🔍 Monitoring and Logs
-
-### View Logs
-```bash
-# Docker logs
-docker logs pdf-chatbot
-
-# Docker Compose logs
-docker-compose logs -f
-```
-
-### Health Check
-The application includes health checks:
-- **Endpoint**: `http://localhost:8501/_stcore/health`
-- **Interval**: 30 seconds
-- **Timeout**: 10 seconds
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 
 1. **API Key Not Found**
-   - Ensure `OPENAI_API_KEY` is set in environment variables
+   - Make sure you set `OPENAI_API_KEY` in Streamlit Cloud secrets
    - Check if the key is valid and has sufficient credits
 
-2. **Port Already in Use**
-   - Change port: `docker run -p 8502:8501 ...`
-   - Or stop existing service: `docker stop pdf-chatbot`
-
-3. **Memory Issues**
-   - Increase Docker memory limit
-   - Reduce `CHUNK_SIZE` in environment variables
-
-4. **Build Failures**
-   - Check Python version compatibility
+2. **App Won't Start**
+   - Check the logs in Streamlit Cloud dashboard
    - Ensure all dependencies are in requirements.txt
 
-### Debug Mode
-```bash
-# Run with debug logging
-docker run -p 8501:8501 \
-  -e OPENAI_API_KEY=your_key_here \
-  -e STREAMLIT_LOGGER_LEVEL=debug \
-  pdf-chatbot
-```
+3. **Import Errors**
+   - Make sure all packages are in requirements.txt
+   - Check Python version compatibility
 
-## 📊 Performance Optimization
+4. **Memory Issues**
+   - Reduce `CHUNK_SIZE` in environment variables
+   - Use smaller PDF files for testing
 
-### For High Traffic
-- Use `gpt-3.5-turbo` for faster responses
-- Increase `CHUNK_SIZE` to 2000-3000
-- Use multiple replicas with load balancer
+### Getting Help
+- Check Streamlit Cloud logs
+- Review the error messages
+- Ensure your API key is correct
+- Test locally first with `streamlit run chatbot.py`
 
-### For Better Quality
-- Use `gpt-4` model
-- Increase `OPENAI_MAX_TOKENS`
-- Fine-tune `OPENAI_TEMPERATURE`
+## 🎉 Success!
 
-## 🔄 Updates and Maintenance
+Once deployed, your PDF Chatbot will be available at a public URL that you can share with anyone. The app will automatically update whenever you push changes to your GitHub repository.
 
-### Rolling Updates
-```bash
-# Pull latest image
-docker pull your-registry/pdf-chatbot:latest
-
-# Update running container
-docker-compose up -d --no-deps pdf-chatbot
-```
-
-### Backup
-```bash
-# Backup environment variables
-docker exec pdf-chatbot env > backup.env
-
-# Backup application data (if any)
-docker cp pdf-chatbot:/app/data ./backup-data
-```
-
-## 📈 Scaling
-
-### Horizontal Scaling
-- Use Docker Swarm or Kubernetes
-- Implement load balancing
-- Use shared storage for file uploads
-
-### Vertical Scaling
-- Increase container resources
-- Optimize chunk sizes
-- Use faster models
-
-## 🛡️ Security Considerations
-
-- ✅ Use HTTPS in production
-- ✅ Set up proper CORS policies
-- ✅ Implement rate limiting
-- ✅ Monitor API usage
-- ✅ Regular security updates
-- ✅ Use secrets management
+### Next Steps
+- Share your app URL with others
+- Monitor usage in Streamlit Cloud dashboard
+- Customize the app with different environment variables
+- Add more features and push updates
