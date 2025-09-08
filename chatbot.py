@@ -50,9 +50,9 @@ def check_credentials(username, password):
         # Compare username and hashed password
         return username == config_username and hash_password(password) == config_password_hash
     except:
-        # If secrets are not available, show error
-        st.error("⚠️ Authentication configuration not found. Please check your Streamlit secrets.")
-        return False
+        # If secrets are not available, use default credentials for testing
+        st.warning("⚠️ Using default credentials. Please configure Streamlit secrets for production.")
+        return username == "admin" and password == "admin123"
 
 def login_page():
     """Display login page"""
@@ -85,9 +85,13 @@ def logout():
     st.rerun()
 
 # Check authentication - show login page if not authenticated
-if not st.session_state.authenticated:
+# Force authentication check
+if not st.session_state.get("authenticated", False):
+    st.write("🔍 DEBUG: Not authenticated, showing login page")
     login_page()
     st.stop()
+
+st.write("🔍 DEBUG: Past authentication check")
 
 
 # OpenAI Configuration
