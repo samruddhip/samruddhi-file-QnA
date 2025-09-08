@@ -95,15 +95,56 @@ The `workshop/` folder contains complete materials for conducting a workshop:
 
 ## 🚀 Deployment
 
-### Streamlit Cloud
-1. Push your code to GitHub
-2. Go to [Streamlit Cloud](https://streamlit.io/cloud)
-3. Connect your GitHub repository
-4. Deploy with one click
+### Streamlit Cloud (Recommended - Free & Easy)
 
-### Local Deployment
+**Step-by-Step Deployment:**
+
+1. **Push your code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Go to Streamlit Cloud**
+   - Visit [share.streamlit.io](https://share.streamlit.io)
+   - Sign in with your GitHub account
+
+3. **Deploy your app**
+   - Click "New app"
+   - Select your repository: `samruddhip/samruddhi-file-QnA`
+   - Set main file path: `chatbot.py`
+   - Click "Deploy!"
+
+4. **Set your API key**
+   - Go to your app's settings
+   - Add secret: `OPENAI_API_KEY`
+   - Value: `your_actual_api_key_here`
+   - Save and restart
+
+5. **Your app is live!** 🎉
+   - Share the URL with anyone
+   - No technical setup required
+
+### Local Development
 ```bash
-streamlit run chatbot.py --server.port 8501
+# Set your API key
+export OPENAI_API_KEY='your_key_here'
+
+# Run locally
+streamlit run chatbot.py
+```
+
+### Environment Variables
+```bash
+# Required
+OPENAI_API_KEY=your_actual_api_key_here
+
+# Optional (customize your app)
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_TEMPERATURE=0
+CHUNK_SIZE=1000
+APP_TITLE=PDF Chatbot
 ```
 
 ## 🤝 Contributing

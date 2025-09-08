@@ -7,18 +7,43 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
-# Hardcoded API key (replace with your actual key)
-OPENAI_API_KEY = "api-key-here"
+# Try to load from .env file first
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # dotenv not installed, continue without it
+    pass
 
+# Configuration - All values can be set via environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0"))
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
 
-#Upload PDF files
-st.header("My first Chatbot")
+# Text processing configuration
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1000"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
+CHUNK_SEPARATORS = os.getenv("CHUNK_SEPARATORS", "\\n").split(",")
 
+# UI Configuration
+APP_TITLE = os.getenv("APP_TITLE", "PDF Chatbot - Ask Questions About Your Documents")
+SIDEBAR_TITLE = os.getenv("SIDEBAR_TITLE", "Your Documents")
+FILE_UPLOADER_TEXT = os.getenv("FILE_UPLOADER_TEXT", "Upload a PDF file and start asking questions")
+QUESTION_INPUT_TEXT = os.getenv("QUESTION_INPUT_TEXT", "Type your question here")
 
-with  st.sidebar:
-    st.title("Your Documents")
-    file = st.file_uploader(" Upload a PDf file and start asking questions", type="pdf")
+# Check if API key is provided
+if not OPENAI_API_KEY:
+    st.error("⚠️ OpenAI API key not found!")
+    st.info("💡 Set your API key: `export OPENAI_API_KEY='your-key-here'` or create a `.env` file")
+    st.stop()
 
+# Upload PDF files
+st.header(APP_TITLE)
+
+with st.sidebar:
+    st.title(SIDEBAR_TITLE)
+    file = st.file_uploader(FILE_UPLOADER_TEXT, type="pdf")
 
 # Extract the text
 if file is not None:
@@ -35,9 +60,9 @@ if file is not None:
             
             # Break it into chunks
             text_splitter = RecursiveCharacterTextSplitter(
-                separators="\n",
-                chunk_size=1000,
-                chunk_overlap=150,
+                separators=CHUNK_SEPARATORS,
+                chunk_size=CHUNK_SIZE,
+                chunk_overlap=CHUNK_OVERLAP,
                 length_function=len
             )
             chunks = text_splitter.split_text(text)
@@ -51,7 +76,7 @@ if file is not None:
                     vector_store = FAISS.from_texts(chunks, embeddings)
                     
                     # Get user question
-                    user_question = st.text_input("Type your question here")
+                    user_question = st.text_input(QUESTION_INPUT_TEXT)
                     
                     # Do similarity search
                     if user_question:
@@ -61,9 +86,9 @@ if file is not None:
                             # Define the LLM
                             llm = ChatOpenAI(
                                 openai_api_key=OPENAI_API_KEY,
-                                temperature=0,
-                                max_tokens=1000,
-                                model_name="gpt-3.5-turbo"
+                                temperature=OPENAI_TEMPERATURE,
+                                max_tokens=OPENAI_MAX_TOKENS,
+                                model_name=OPENAI_MODEL
                             )
                             
                             # Output results

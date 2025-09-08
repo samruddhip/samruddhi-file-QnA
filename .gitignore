@@ -52,6 +52,9 @@ Thumbs.db
 
 # API Keys (security)
 .env
+.env.local
+.env.production
+.env.staging
 config.ini
 secrets.toml
 
@@ -61,3 +64,11 @@ secrets.toml
 # Temporary files
 *.tmp
 *.temp
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Deployment
+.vercel
+.railway
