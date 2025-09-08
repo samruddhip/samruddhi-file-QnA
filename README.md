@@ -95,16 +95,42 @@ The `workshop/` folder contains complete materials for conducting a workshop:
 
 ## 🚀 Deployment
 
-### Streamlit Cloud
-1. Push your code to GitHub
-2. Go to [Streamlit Cloud](https://streamlit.io/cloud)
-3. Connect your GitHub repository
-4. Deploy with one click
+### Quick Deploy Options
 
-### Local Deployment
+**1. Streamlit Cloud (Recommended - Free)**
+1. Push code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect repository and set environment variables
+4. Deploy!
+
+**2. Docker (Production Ready)**
+```bash
+# Build and run
+docker build -t pdf-chatbot .
+docker run -p 8501:8501 -e OPENAI_API_KEY=your_key_here pdf-chatbot
+
+# Or use docker-compose
+docker-compose up --build
+```
+
+**3. Local Development**
 ```bash
 streamlit run chatbot.py --server.port 8501
 ```
+
+### Environment Variables for Deployment
+```bash
+# Required
+OPENAI_API_KEY=your_actual_api_key_here
+
+# Optional
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_TEMPERATURE=0
+CHUNK_SIZE=1000
+APP_TITLE=PDF Chatbot
+```
+
+📖 **See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment guide**
 
 ## 🤝 Contributing
 

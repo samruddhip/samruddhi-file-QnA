@@ -64,3 +64,11 @@ secrets.toml
 # Temporary files
 *.tmp
 *.temp
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Deployment
+.vercel
+.railway
