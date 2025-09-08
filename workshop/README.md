@@ -44,12 +44,26 @@ A Streamlit-based PDF chatbot that uses LangChain and OpenAI to answer questions
    
    Get your API key from [OpenAI Platform](https://platform.openai.com/)
 
-5. **Run the application**
+5. **Set up authentication (Optional)**
+   
+   **Default credentials:** `admin` / `admin123`
+   
+   **To change credentials:**
+   ```bash
+   # Generate new password hash
+   python generate_password.py
+   
+   # Set environment variables
+   export APP_USERNAME='your_username'
+   export APP_PASSWORD_HASH='your_hashed_password'
+   ```
+
+6. **Run the application**
    ```bash
    streamlit run chatbot.py
    ```
 
-6. **Open in browser**
+7. **Open in browser**
    - The app will open at `http://localhost:8501`
 
 ## 📁 Project Structure
@@ -95,15 +109,56 @@ The `workshop/` folder contains complete materials for conducting a workshop:
 
 ## 🚀 Deployment
 
-### Streamlit Cloud
-1. Push your code to GitHub
-2. Go to [Streamlit Cloud](https://streamlit.io/cloud)
-3. Connect your GitHub repository
-4. Deploy with one click
+### Streamlit Cloud (Recommended - Free & Easy)
 
-### Local Deployment
+**Step-by-Step Deployment:**
+
+1. **Push your code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Go to Streamlit Cloud**
+   - Visit [share.streamlit.io](https://share.streamlit.io)
+   - Sign in with your GitHub account
+
+3. **Deploy your app**
+   - Click "New app"
+   - Select your repository: `samruddhip/samruddhi-file-QnA`
+   - Set main file path: `chatbot.py`
+   - Click "Deploy!"
+
+4. **Set your API key**
+   - Go to your app's settings
+   - Add secret: `OPENAI_API_KEY`
+   - Value: `your_actual_api_key_here`
+   - Save and restart
+
+5. **Your app is live!** 🎉
+   - Share the URL with anyone
+   - No technical setup required
+
+### Local Development
 ```bash
-streamlit run chatbot.py --server.port 8501
+# Set your API key
+export OPENAI_API_KEY='your_key_here'
+
+# Run locally
+streamlit run chatbot.py
+```
+
+### Environment Variables
+```bash
+# Required
+OPENAI_API_KEY=your_actual_api_key_here
+
+# Optional (customize your app)
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_TEMPERATURE=0
+CHUNK_SIZE=1000
+APP_TITLE=PDF Chatbot
 ```
 
 ## 🤝 Contributing
@@ -151,36 +206,44 @@ SIDEBAR_TITLE=Document Library
 
 ## 🔒 Security Features
 
+### ✅ Authentication System
+- **Login required** - Users must authenticate before accessing the app
+- **Password hashing** - Passwords are hashed using SHA-256
+- **Session management** - Secure session handling with logout functionality
+- **Configurable credentials** - Set custom usernames and passwords
+
 ### ✅ API Key Protection
 - **Never hardcoded** - API keys are read from environment variables
 - **Git ignored** - `.env` files are automatically excluded from version control
 - **Secure by default** - Application stops if no API key is provided
 
-### 🔐 How to Set API Key Securely
+### 🔐 How to Set Up Security
 
-**Development (using .env file):**
+**Default Login Credentials:**
+- Username: `admin`
+- Password: `admin123`
+
+**Change Default Credentials:**
 ```bash
-# 1. Copy example file
-cp .env.example .env
+# Generate new password hash
+python generate_password.py
 
-# 2. Edit with your actual key
-nano .env
-
-# 3. Run the app
-streamlit run chatbot.py
+# Set environment variables
+export APP_USERNAME='your_username'
+export APP_PASSWORD_HASH='your_hashed_password'
 ```
 
-**Production (using environment variables):**
-```bash
-# Set environment variable
-export OPENAI_API_KEY='sk-your-actual-key-here'
-
-# Run the app
-streamlit run chatbot.py
+**For Streamlit Cloud:**
+Add to secrets:
+```
+APP_USERNAME = "your_username"
+APP_PASSWORD_HASH = "your_hashed_password"
 ```
 
 ### 🛡️ Security Best Practices
-- ✅ Use different API keys for development and production
+- ✅ Change default credentials immediately
+- ✅ Use strong passwords
+- ✅ Use different credentials for development and production
 - ✅ Never share your `.env` file
 - ✅ Rotate API keys regularly
 - ✅ Monitor API usage in OpenAI dashboard

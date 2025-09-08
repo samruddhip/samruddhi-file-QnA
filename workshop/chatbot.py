@@ -1,5 +1,7 @@
 import streamlit as st
 import os
+import hashlib
+import time
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -16,7 +18,20 @@ except ImportError:
     pass
 
 # Configuration - All values can be set via environment variables
+# Try to get API key from environment variables first, then from Streamlit secrets
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# If not found in environment, try Streamlit secrets (for Streamlit Cloud)
+if not OPENAI_API_KEY:
+    try:
+        OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+    except:
+        pass
+
+# Clean up the API key (remove quotes if present)
+if OPENAI_API_KEY:
+    OPENAI_API_KEY = OPENAI_API_KEY.strip().strip('"').strip("'")
+
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0"))
 OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
@@ -35,8 +50,90 @@ QUESTION_INPUT_TEXT = os.getenv("QUESTION_INPUT_TEXT", "Type your question here"
 # Check if API key is provided
 if not OPENAI_API_KEY:
     st.error("⚠️ OpenAI API key not found!")
-    st.info("💡 Set your API key: `export OPENAI_API_KEY='your-key-here'` or create a `.env` file")
+    st.markdown("""
+    **Please set your OpenAI API key:**
+    
+    **For Streamlit Cloud:**
+    1. Go to your app's Settings → Secrets
+    2. Add: `OPENAI_API_KEY = "your-key-here"`
+    3. Save and restart the app
+    
+    **For Local Development:**
+    ```bash
+    export OPENAI_API_KEY='your-key-here'
+    # or create .env file
+    ```
+    """)
     st.stop()
+
+# Authentication System
+def hash_password(password):
+    """Hash a password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def check_credentials(username, password):
+    """Check if username and password are correct"""
+    # Get credentials from environment variables or use defaults
+    valid_username = os.getenv("APP_USERNAME", "admin")
+    valid_password_hash = os.getenv("APP_PASSWORD_HASH", hash_password("admin123"))
+    
+    # Hash the provided password
+    provided_password_hash = hash_password(password)
+    
+    return username == valid_username and provided_password_hash == valid_password_hash
+
+def login_page():
+    """Display login page"""
+    st.title("🔐 PDF Chatbot - Login Required")
+    
+    with st.form("login_form"):
+        st.markdown("### Please login to access the PDF Chatbot")
+        
+        username = st.text_input("Username", placeholder="Enter your username")
+        password = st.text_input("Password", type="password", placeholder="Enter your password")
+        
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            login_button = st.form_submit_button("Login", use_container_width=True)
+        with col2:
+            if st.form_submit_button("Forgot Password?", use_container_width=True):
+                st.info("Contact your administrator for password reset.")
+        
+        if login_button:
+            if check_credentials(username, password):
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                st.success("✅ Login successful!")
+                st.rerun()
+            else:
+                st.error("❌ Invalid username or password!")
+    
+    # Show default credentials for first-time setup
+    with st.expander("ℹ️ Default Credentials (Change in Environment Variables)"):
+        st.code("""
+Username: admin
+Password: admin123
+
+To change these, set environment variables:
+APP_USERNAME = your_username
+APP_PASSWORD_HASH = your_hashed_password
+        """)
+
+def logout():
+    """Logout user"""
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.rerun()
+
+# Check authentication
+if not st.session_state.get("authenticated", False):
+    login_page()
+    st.stop()
+
+# Main application (only shown if authenticated)
+st.sidebar.markdown("---")
+if st.sidebar.button("🚪 Logout"):
+    logout()
 
 # Upload PDF files
 st.header(APP_TITLE)
