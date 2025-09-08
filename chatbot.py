@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import hashlib
+import time
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -8,14 +9,12 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
-# Debug: Show that the app is starting
-st.write("🔍 DEBUG: App starting...")
-
 # Try to load from .env file first
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
+    # dotenv not installed, continue without it
     pass
 
 # Helper functions
@@ -26,78 +25,17 @@ def hash_password(password):
 def get_config_value(key, default_value, value_type=str):
     """Get configuration value from Streamlit secrets or environment variables"""
     try:
+        # Try Streamlit secrets first
         value = st.secrets[key]
         if value_type == str:
             return value.strip().strip('"').strip("'")
         return value_type(value)
     except:
+        # Fallback to environment variables
         env_value = os.getenv(key, default_value)
         if value_type == str:
             return env_value
         return value_type(env_value)
-
-# Initialize session state
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-if "username" not in st.session_state:
-    st.session_state.username = None
-
-# Force authentication to False for testing
-st.session_state.authenticated = False
-
-# Authentication functions
-def check_credentials(username, password):
-    """Check if username and password are correct using Streamlit secrets"""
-    try:
-        # Get credentials from Streamlit secrets
-        config_username = st.secrets["APP_USERNAME"]
-        config_password_hash = st.secrets["APP_PASSWORD_HASH"]
-        
-        # Compare username and hashed password
-        return username == config_username and hash_password(password) == config_password_hash
-    except:
-        # If secrets are not available, use default credentials for testing
-        st.warning("⚠️ Using default credentials. Please configure Streamlit secrets for production.")
-        return username == "admin" and password == "admin123"
-
-def login_page():
-    """Display login page"""
-    # Center the login form
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        st.title("🔐 PDF Chatbot")
-        st.markdown("### Please login to access the PDF Chatbot")
-        
-        with st.form("login_form"):
-            username = st.text_input("Username", placeholder="Enter your username")
-            password = st.text_input("Password", type="password", placeholder="Enter your password")
-            
-            login_button = st.form_submit_button("🚀 Login", use_container_width=True)
-            
-            if login_button:
-                if check_credentials(username, password):
-                    st.session_state.authenticated = True
-                    st.session_state.username = username
-                    st.success("✅ Login successful!")
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid username or password!")
-
-def logout():
-    """Logout user"""
-    st.session_state.authenticated = False
-    st.session_state.username = None
-    st.rerun()
-
-# Check authentication - show login page if not authenticated
-# Force authentication check
-if not st.session_state.get("authenticated", False):
-    st.write("🔍 DEBUG: Not authenticated, showing login page")
-    login_page()
-    st.stop()
-
-st.write("🔍 DEBUG: Past authentication check")
 
 
 # OpenAI Configuration
@@ -142,13 +80,7 @@ if not OPENAI_API_KEY:
 
 
 
-# Main application (only shown if authenticated)
-# Add user info and logout in sidebar
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"👤 **Logged in as:** {st.session_state.get('username', 'admin')}")
-if st.sidebar.button("🚪 Logout", use_container_width=True):
-    logout()
-st.sidebar.markdown("---")
+# Main application
 
 # Upload PDF files
 st.header(APP_TITLE)

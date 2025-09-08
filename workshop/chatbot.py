@@ -1,13 +1,15 @@
 import streamlit as st
 import os
 import hashlib
-import time
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
+
+# Debug: Show that the app is starting
+st.write("🔍 DEBUG: App starting...")
 
 # Try to load from .env file first
 try:
