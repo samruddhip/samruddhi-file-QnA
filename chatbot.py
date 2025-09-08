@@ -9,6 +9,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
+
 # Try to load from .env file first
 try:
     from dotenv import load_dotenv
@@ -91,40 +92,35 @@ def check_credentials(username, password):
 
 def login_page():
     """Display login page"""
-    st.title("🔐 PDF Chatbot - Login Required")
+    # Center the login form
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with st.form("login_form"):
+    with col2:
+        st.title("🔐 PDF Chatbot")
         st.markdown("### Please login to access the PDF Chatbot")
         
-        username = st.text_input("Username", placeholder="Enter your username")
-        password = st.text_input("Password", type="password", placeholder="Enter your password")
+        with st.form("login_form"):
+            username = st.text_input("Username", placeholder="Enter your username", value="admin")
+            password = st.text_input("Password", type="password", placeholder="Enter your password", value="admin123")
+            
+            login_button = st.form_submit_button("🚀 Login", use_container_width=True)
+            
+            if login_button:
+                if check_credentials(username, password):
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.success("✅ Login successful!")
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid username or password!")
         
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            login_button = st.form_submit_button("Login", use_container_width=True)
-        with col2:
-            if st.form_submit_button("Forgot Password?", use_container_width=True):
-                st.info("Contact your administrator for password reset.")
-        
-        if login_button:
-            if check_credentials(username, password):
-                st.session_state.authenticated = True
-                st.session_state.username = username
-                st.success("✅ Login successful!")
-                st.rerun()
-            else:
-                st.error("❌ Invalid username or password!")
-    
-    # Show default credentials for first-time setup
-    with st.expander("ℹ️ Default Credentials (Change in Environment Variables)"):
-        st.code("""
+        # Show default credentials
+        with st.expander("ℹ️ Default Credentials"):
+            st.code("""
 Username: admin
 Password: admin123
-
-To change these, set environment variables:
-APP_USERNAME = your_username
-APP_PASSWORD_HASH = your_hashed_password
-        """)
+            """)
+            st.markdown("**To change these credentials, update your environment variables or Streamlit secrets.**")
 
 def logout():
     """Logout user"""
@@ -138,9 +134,12 @@ if not st.session_state.get("authenticated", False):
     st.stop()
 
 # Main application (only shown if authenticated)
+# Add user info and logout in sidebar
 st.sidebar.markdown("---")
-if st.sidebar.button("🚪 Logout"):
+st.sidebar.markdown(f"👤 **Logged in as:** {st.session_state.get('username', 'admin')}")
+if st.sidebar.button("🚪 Logout", use_container_width=True):
     logout()
+st.sidebar.markdown("---")
 
 # Upload PDF files
 st.header(APP_TITLE)
