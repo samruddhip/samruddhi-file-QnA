@@ -8,6 +8,9 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_openai import ChatOpenAI
 
+# Debug: Show that the app is starting
+st.write("🔍 DEBUG: App starting...")
+
 # Try to load from .env file first
 try:
     from dotenv import load_dotenv
@@ -38,6 +41,9 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 if "username" not in st.session_state:
     st.session_state.username = None
+
+# Force authentication to False for testing
+st.session_state.authenticated = False
 
 # Authentication functions
 def check_credentials(username, password):
