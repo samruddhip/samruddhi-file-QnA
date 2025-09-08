@@ -27,12 +27,24 @@ A Streamlit-based PDF chatbot that uses LangChain and OpenAI to answer questions
    pip install -r requirements.txt
    ```
 
-4. **Set up OpenAI API key**
-   - Get your API key from [OpenAI Platform](https://platform.openai.com/)
-   - Replace the API key in `chatbot.py`:
-   ```python
-   OPENAI_API_KEY = "your-actual-api-key-here"
+4. **Set up OpenAI API key securely**
+   
+   **Option A: Using the setup script (Recommended)**
+   ```bash
+   python setup_env.py
    ```
+   
+   **Option B: Environment variable**
+   ```bash
+   export OPENAI_API_KEY='your-actual-api-key-here'
+   ```
+   
+   **Option C: Create .env file manually**
+   ```bash
+   echo "OPENAI_API_KEY=your-actual-api-key-here" > .env
+   ```
+   
+   Get your API key from [OpenAI Platform](https://platform.openai.com/)
 
 5. **Run the application**
    ```bash
@@ -114,6 +126,64 @@ If you encounter any issues:
 1. Check the troubleshooting section in `workshop/README.md`
 2. Open an issue on GitHub
 3. Check the [Streamlit documentation](https://docs.streamlit.io/)
+
+## ⚙️ Configuration
+
+The application is fully configurable through environment variables. See [CONFIG.md](CONFIG.md) for complete documentation.
+
+### Quick Configuration Examples
+
+**Basic Setup:**
+```bash
+OPENAI_API_KEY=your_key_here
+```
+
+**Custom Model:**
+```bash
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4
+OPENAI_TEMPERATURE=0.1
+CHUNK_SIZE=1500
+```
+
+**Custom UI:**
+```bash
+OPENAI_API_KEY=your_key_here
+APP_TITLE=My Custom PDF Assistant
+SIDEBAR_TITLE=Document Library
+```
+
+### Interactive Setup
+```bash
+python setup_env.py
+```
+
+## 🔒 Security Best Practices
+
+### API Key Security
+- ✅ **Never commit API keys to version control**
+- ✅ **Use environment variables or .env files**
+- ✅ **The .env file is automatically ignored by git**
+- ✅ **Use different keys for development and production**
+
+### Environment Variables
+```bash
+# Development
+export OPENAI_API_KEY='sk-dev-key-here'
+
+# Production (use your hosting platform's environment variable settings)
+OPENAI_API_KEY='sk-prod-key-here'
+```
+
+### .env File Structure
+```bash
+# .env file (not committed to git)
+OPENAI_API_KEY=your_actual_key_here
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_TEMPERATURE=0
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=150
+```
 
 ## 🔗 Links
 

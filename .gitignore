@@ -52,6 +52,9 @@ Thumbs.db
 
 # API Keys (security)
 .env
+.env.local
+.env.production
+.env.staging
 config.ini
 secrets.toml
 
